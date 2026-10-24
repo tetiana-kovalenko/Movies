@@ -1,0 +1,10 @@
+<resources>
+    <string name="movie_type_movie">Movie</string>
+    <string name="movie_type_series">Series</string>
+    <string name="movie_type_episode">Episode</string>
+    <string name="favorite_add">Add to favorites</string>
+    <string name="favorite_remove">Remove from favorites</string>
+    <string name="favorites_read_error">Failed to retrieve favorites</string>
+    <string name="favorites_write_error">Failed to add favorite</string>
+    <string name="favorites_retry">Retry</string>
+</resources>

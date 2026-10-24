@@ -26,3 +26,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Movies"
+
+include(
+    ":core:domain",
+    ":core:ui",
+)
