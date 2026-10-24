@@ -30,4 +30,7 @@ rootProject.name = "Movies"
 include(
     ":core:domain",
     ":core:ui",
+    ":sdk",
+    ":sdk:admob",
+    ":sdk:launch",
 )

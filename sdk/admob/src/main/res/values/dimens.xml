@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="native_ad_corner_radius">12dp</dimen>
+</resources>
