@@ -1,0 +1,20 @@
+<resources>
+    <string name="search_placeholder">Search movies</string>
+    <string name="search_clear">Clear search</string>
+    <string name="search_prompt_title">Search Movies</string>
+    <plurals name="search_prompt_message">
+        <item quantity="one">Please enter at least %1$d character to perform a search.</item>
+        <item quantity="other">Please enter at least %1$d characters to perform a search.</item>
+    </plurals>
+    <string name="search_loading">Searching…</string>
+    <string name="search_loading_more">Loading more movies…</string>
+    <string name="search_empty_title">No Results Found</string>
+    <string name="search_empty_message">Try searching for another title.</string>
+    <string name="search_error_title">Couldn’t load movies</string>
+    <string name="search_error_fallback">Please try again.</string>
+    <string name="search_error_network">Couldn’t connect. Check your internet connection and try again.</string>
+    <string name="search_error_configuration">Movie search is unavailable because its API key is missing.</string>
+    <string name="search_error_invalid_page">Couldn’t load this page. Please try again.</string>
+    <string name="search_error_invalid_data">The movie service returned an unreadable response. Please try again.</string>
+    <string name="search_retry">Retry</string>
+</resources>

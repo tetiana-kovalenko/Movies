@@ -35,4 +35,6 @@ include(
     ":sdk:launch",
     ":feature:favorites:domain",
     ":feature:favorites:impl",
+    ":feature:search:domain",
+    ":feature:search:impl",
 )
