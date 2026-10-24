@@ -37,4 +37,6 @@ include(
     ":feature:favorites:impl",
     ":feature:search:domain",
     ":feature:search:impl",
+    ":feature:details:domain",
+    ":feature:details:impl",
 )
