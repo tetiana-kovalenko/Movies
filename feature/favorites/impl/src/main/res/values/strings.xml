@@ -1,0 +1,4 @@
+<resources>
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_empty">No favorites yet. Add movies from Search or Details to see them here.</string>
+</resources>

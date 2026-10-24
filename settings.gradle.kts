@@ -33,4 +33,6 @@ include(
     ":sdk",
     ":sdk:admob",
     ":sdk:launch",
+    ":feature:favorites:domain",
+    ":feature:favorites:impl",
 )
