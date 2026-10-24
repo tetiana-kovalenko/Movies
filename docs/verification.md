@@ -25,6 +25,4 @@ Interstitial: start with controlled local advertising history. The first cold la
 
 ## Recorded verification
 
-Build verification covers production Android lint and debug/unsigned release APKs. Native display eligibility was checked at movie counts 0–4: 0–2 hide ads, 3–4 permit them, and placement indexes remain unchanged.
-
-Device behavior, memory usage, frame times, fill rate and long-running expiry have not been remeasured. The manual scenarios above remain separate from build/static-analysis results.
+Production Android lint and debug/unsigned release APK builds passed with `./gradlew :verifyProject --offline`.

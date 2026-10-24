@@ -1,6 +1,6 @@
 # Advertising SDK
 
-The advertising implementation uses Google Mobile Ads Next-Gen SDK 1.5.0. `sdk` owns contracts, placement rules and resource lifetimes; `sdk:admob` owns Google integration and native asset views; `sdk:launch` owns persisted launch history.
+The advertising implementation uses Google Mobile Ads Next-Gen SDK 1.5.0. `sdk` owns contracts, display eligibility and resource lifetimes; `sdk:admob` owns Google integration and native asset views; `sdk:launch` owns persisted launch history.
 
 ## Native ads
 
@@ -13,7 +13,7 @@ SearchViewModel combines cached PagingData with the native session flow and quer
 
 ## Interstitial
 
-Eligibility starts on the second recorded cold launch and continues across later launches until SDK-confirmed presentation is persisted. The count saturates at two. Preparation runs once per process without blocking content; the Details transition offers an already-prepared ad. An early transition does not cancel loading.
+Eligibility starts on the second recorded cold launch and continues across later launches until SDK-confirmed presentation is persisted. The count saturates at two. Activity creation without saved instance state starts process-owned preparation; repeated starts are ignored. The Details transition offers an already-prepared ad without blocking content. An early transition does not cancel loading.
 
 A prepared ad is single-use. No fill or load failure does not automatically retry in the same session. Fullscreen admission prevents overlapping accepted overlays, and presentation requires a resumed Activity. Native attachment and interstitial presentation retain their one-hour age checks; there is no refresh timer.
 
@@ -31,4 +31,4 @@ NativeAdView and MediaView host the SDK assets and click/impression handling. Th
 
 API behavior follows Google's [initialization](https://developers.google.com/admob/android/next-gen/migration), [callback threading](https://developers.google.com/admob/android/next-gen/migration/handle-callbacks), [native loading](https://developers.google.com/admob/android/next-gen/native), [native rendering](https://developers.google.com/admob/android/next-gen/native/advanced), and [single interstitial loading](https://developers.google.com/admob/android/next-gen/interstitial/single-load) documentation.
 
-Community discussions on [ad integration](https://www.reddit.com/r/admob/comments/1ojk0vn/my_tips_to_improve_your_revenue_from_ads/) and [Compose performance](https://www.reddit.com/r/androiddev/comments/1p2ssq7/are_there_ad_sdks_that_are_compose_first/) provide experience reports, not API contracts or application business rules. No memory, frame-time, fill-rate or revenue measurements are claimed here.
+Further reading: community discussions on [ad integration](https://www.reddit.com/r/admob/comments/1ojk0vn/my_tips_to_improve_your_revenue_from_ads/) and [Compose performance](https://www.reddit.com/r/androiddev/comments/1p2ssq7/are_there_ad_sdks_that_are_compose_first/).
