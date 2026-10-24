@@ -27,16 +27,19 @@ dependencyResolutionManagement {
 
 rootProject.name = "Movies"
 
+include(":app")
+
 include(
     ":core:domain",
     ":core:ui",
     ":sdk",
     ":sdk:admob",
     ":sdk:launch",
-    ":feature:favorites:domain",
-    ":feature:favorites:impl",
+    ":feature",
     ":feature:search:domain",
     ":feature:search:impl",
+    ":feature:favorites:domain",
+    ":feature:favorites:impl",
     ":feature:details:domain",
     ":feature:details:impl",
 )

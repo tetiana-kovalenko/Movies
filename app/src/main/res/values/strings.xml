@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Movies</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_favorites">Favorites</string>
+</resources>
