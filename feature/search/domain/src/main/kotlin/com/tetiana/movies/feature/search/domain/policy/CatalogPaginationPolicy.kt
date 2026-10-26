@@ -7,7 +7,7 @@ object CatalogPaginationPolicy {
   const val PAGE_SIZE = 10
   private const val LAST_PAGE = 100
 
-  fun isValidPage(page: Int): Boolean = page in FIRST_PAGE..LAST_PAGE
+  fun isValidPageNumber(page: Int): Boolean = page in FIRST_PAGE..LAST_PAGE
 
   fun nextPage(page: Int, result: MoviePage): Int? =
       if (

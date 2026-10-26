@@ -16,10 +16,11 @@ import javax.inject.Inject
 internal class DefaultSearchMoviesUseCase @Inject constructor(
     private val repository: CatalogRepository,
 ) : BaseUseCase<SearchRequest, SearchFeedPage>(), SearchMoviesUseCase {
+
     override suspend fun execute(params: SearchRequest): SearchFeedPage {
         if (!CatalogSearchPolicy.canSearch(params.query)) throw CatalogException.InvalidQuery()
         val cursor = params.cursor
-        if (!CatalogPaginationPolicy.isValidPage(cursor.page)) throw CatalogException.InvalidPage()
+        if (!CatalogPaginationPolicy.isValidPageNumber(cursor.page)) throw CatalogException.InvalidPage()
 
         val result = repository.search(params.query, cursor.page)
         val seenIds = cursor.seenMovieIds.toMutableSet()

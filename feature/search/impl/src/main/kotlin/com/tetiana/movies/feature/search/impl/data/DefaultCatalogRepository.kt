@@ -35,13 +35,12 @@ constructor(
     val response = httpResponse.body() ?: throw CommonException.InvalidData()
 
     return when (response.response) {
-      OmdbResponseStatus.SUCCESS -> {
-        val movies = response.movies?.map { it.toDomain() } ?: throw CommonException.InvalidData()
-        val total =
-            response.totalResults?.toIntOrNull()?.takeIf { it >= movies.size }
-                ?: throw CommonException.InvalidData()
-        MoviePage(movies = movies, totalResults = total, page = page)
-      }
+        OmdbResponseStatus.SUCCESS -> {
+            val movies = response.movies
+            val totalResults = response.totalResults?.toIntOrNull()
+            if (movies == null || totalResults == null || totalResults < movies.size) throw CommonException.InvalidData()
+            MoviePage(movies = movies.map { it.toDomain() }, totalResults = totalResults, page = page)
+        }
 
       OmdbResponseStatus.FAILURE -> throw CatalogException.Backend(response.error)
       else -> throw CommonException.InvalidData()
