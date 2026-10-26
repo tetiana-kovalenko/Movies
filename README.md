@@ -41,4 +41,4 @@ SearchViewModel owns status selection, error-message mapping, and mixed movie/ad
 
 Native ads are requested once when SearchViewModel starts, retained for its lifetime, and shown only when the current list contains at least three movies. The two slots are anchored after the first and second movies. Unfilled slots are omitted; loading is independent of the display threshold. The interstitial becomes eligible on the second recorded cold launch and stays eligible across launches until presentation is confirmed and persisted. The existing Details transition offers a ready ad without waiting for loading.
 
-Search has one full-screen preview for each main state; its results preview uses a large font. Read [architecture](docs/architecture.md), [verification](docs/verification.md), [advertising SDK](docs/ads-review.md), and [project guidance](AGENTS.md) for details.
+Search has one preview function for each main state; @PreviewScreen renders each with default and large fonts. Read [architecture](docs/architecture.md), [verification](docs/verification.md), [advertising SDK](docs/ads-review.md), and [project guidance](AGENTS.md) for details.

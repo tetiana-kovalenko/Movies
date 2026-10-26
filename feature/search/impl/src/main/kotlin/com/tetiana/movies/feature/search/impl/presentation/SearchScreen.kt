@@ -48,7 +48,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
@@ -63,6 +62,7 @@ import com.tetiana.movies.core.ui.FavoriteIconButton
 import com.tetiana.movies.core.ui.MovieCard
 import com.tetiana.movies.core.ui.R as UiR
 import com.tetiana.movies.core.ui.theme.MoviesTheme
+import com.tetiana.movies.core.ui.theme.PreviewScreen
 import com.tetiana.movies.feature.search.impl.R
 import kotlinx.coroutines.flow.flowOf
 
@@ -265,29 +265,29 @@ private fun SearchResults(
     }
 }
 
-@Preview(name = "Prompt", showBackground = true)
+@PreviewScreen
 @Composable
 private fun SearchPromptPreview() = SearchPreview(SearchUiState(status = previewPromptStatus()))
 
-@Preview(name = "Loading", showBackground = true)
+@PreviewScreen
 @Composable
 private fun SearchLoadingPreview() = SearchPreview(
     state = SearchUiState(query = "Xen", canSearch = true, status = previewLoadingStatus),
 )
 
-@Preview(name = "Error", showBackground = true)
+@PreviewScreen
 @Composable
 private fun SearchErrorPreview() = SearchPreview(
     state = SearchUiState(query = "xyz123", canSearch = true, status = previewErrorStatus),
 )
 
-@Preview(name = "Empty", showBackground = true)
+@PreviewScreen
 @Composable
 private fun SearchEmptyPreview() = SearchPreview(
     state = SearchUiState(query = "Xen", canSearch = true, status = previewEmptyStatus()),
 )
 
-@Preview(name = "Results", showBackground = true, fontScale = 2f)
+@PreviewScreen
 @Composable
 private fun SearchResultsPreview() = SearchPreview(
     state = SearchUiState(query = "Xen", canSearch = true),

@@ -36,7 +36,7 @@ SearchViewModel combines query-scoped cached pages, ad readiness, and SDK displa
 
 SearchRoute collects one composite Paging stream and SearchViewModel’s StateFlow and passes them to SearchScreen. SearchViewModel updates prompt/loading/error/empty status and pagination feedback when the query changes and page requests start or complete. Paging load states and item counts are not sent back from the Route. The ViewModel confirms empty results only after a successful terminal page with no loaded movies. Responses for a different prepared query do not update the screen state. SearchViewModel resolves status and pagination messages through the string-only ResourceProvider contract in core:domain, preserving nonblank backend text. core:ui binds ResourceProviderImpl as a Hilt singleton using ApplicationContext. Static labels remain resource IDs resolved by SearchScreen; no Context or Resources is passed into the ViewModel. SearchScreen renders the supplied state and paged rows, handles keyboard/focus interaction, and lets Paging item access drive further loading.
 
-The five Search previews cover prompt, loading, error, empty, and results, once each. Results uses a large font. Preview state is explicit and creates no ViewModel, network request, or live advertisement.
+The five Search preview functions cover prompt, loading, error, empty, and results. Each uses @PreviewScreen for default and large fonts. Preview state is explicit and creates no ViewModel, network request, or live advertisement.
 
 ## Networking and failures
 
