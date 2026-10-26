@@ -1,6 +1,7 @@
 plugins {
     id("movies.android.library")
     id("movies.android.compose")
+    id("movies.hilt")
 }
 
 android { namespace = "com.tetiana.movies.core.ui" }
