@@ -2,10 +2,7 @@
     <string name="search_placeholder">Search movies</string>
     <string name="search_clear">Clear search</string>
     <string name="search_prompt_title">Search Movies</string>
-    <plurals name="search_prompt_message">
-        <item quantity="one">Please enter at least %1$d character to perform a search.</item>
-        <item quantity="other">Please enter at least %1$d characters to perform a search.</item>
-    </plurals>
+    <string name="search_prompt_message">Please enter at least three characters to perform a search.</string>
     <string name="search_loading">Searching…</string>
     <string name="search_loading_more">Loading more movies…</string>
     <string name="search_empty_title">No Results Found</string>

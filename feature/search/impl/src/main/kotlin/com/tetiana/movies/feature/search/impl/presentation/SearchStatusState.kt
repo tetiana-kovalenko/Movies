@@ -1,9 +1,11 @@
 package com.tetiana.movies.feature.search.impl.presentation
 
+import androidx.annotation.StringRes
+
 /** Full-screen status prepared by the ViewModel; null status in SearchUiState displays results. */
 internal data class SearchStatusState(
-    val title: String,
+    @param:StringRes val titleRes: Int,
     val message: String? = null,
-    val loading: Boolean = false,
+    val isLoading: Boolean = false,
     val canRetry: Boolean = false,
 )

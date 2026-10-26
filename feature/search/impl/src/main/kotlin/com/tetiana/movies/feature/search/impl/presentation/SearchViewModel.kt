@@ -1,9 +1,7 @@
 package com.tetiana.movies.feature.search.impl.presentation
 
-import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.Pager
@@ -12,6 +10,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.tetiana.movies.core.domain.error.CommonException
 import com.tetiana.movies.core.domain.model.Movie
+import com.tetiana.movies.core.domain.resources.ResourceProvider
 import com.tetiana.movies.core.ui.R as UiR
 import com.tetiana.movies.core.ui.message.UserMessage
 import com.tetiana.movies.feature.favorites.domain.model.FavoriteChange
@@ -50,13 +49,14 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 internal class SearchViewModel @Inject constructor(
-    private val searchMovies: SearchMoviesUseCase,
+    private val searchMoviesUseCase: SearchMoviesUseCase,
     nativeAdProvider: NativeAdProvider,
     private val observeFavoritesUseCase: ObserveFavoritesUseCase,
     private val updateFavoriteUseCase: UpdateFavoriteUseCase,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
     private val mutableUiState = MutableStateFlow(
-        SearchUiState(minimumQueryLength = CatalogSearchPolicy.MIN_QUERY_LENGTH),
+        SearchUiState(status = promptStatus()),
     )
     val uiState = mutableUiState.asStateFlow()
 
@@ -115,56 +115,62 @@ internal class SearchViewModel @Inject constructor(
         query: SearchQuery.Ready,
         cursor: SearchCursor,
         adsEligible: MutableStateFlow<Boolean>,
-    ): Result<SearchFeedPage> = searchMovies(SearchRequest(query.keyword, cursor))
-        .onSuccess { page ->
-            adsEligible.value = NativeAdPlacement.Default.canShowAds(page.movieCount)
-            if (cursor == SearchCursor.First) {
-                mutableUiState.update {
-                    if (prepareQuery(it.query) == query) {
-                        it.copy(emptyResultQuery = query.takeIf { page.items.isEmpty() && page.nextCursor == null })
-                    } else it
+    ): Result<SearchFeedPage> {
+        val isFirstPage = cursor == SearchCursor.First
+        mutableUiState.update { current ->
+            if (prepareQuery(current.query) != query) current
+            else current.copy(
+                status = if (isFirstPage && current.status != null) loadingStatus() else current.status,
+                isLoadingMore = !isFirstPage,
+                appendErrorMessage = null,
+            )
+        }
+        return searchMoviesUseCase(SearchRequest(query.keyword, cursor))
+            .onSuccess { page ->
+                adsEligible.value = NativeAdPlacement.Default.canShowAds(page.movieCount)
+                mutableUiState.update { current ->
+                    if (prepareQuery(current.query) != query) current
+                    else current.copy(
+                        status = when {
+                            page.movieCount > 0 -> null
+                            page.nextCursor == null -> emptyStatus()
+                            else -> loadingStatus()
+                        },
+                        isLoadingMore = false,
+                        appendErrorMessage = null,
+                    )
                 }
             }
-        }
+            .onFailure { error ->
+                mutableUiState.update { current ->
+                    if (prepareQuery(current.query) != query) current
+                    else current.copy(
+                        status = if (isFirstPage && current.status != null) {
+                            SearchStatusState(
+                                titleRes = R.string.search_error_title,
+                                message = searchErrorMessage(error),
+                                canRetry = true,
+                            )
+                        } else current.status,
+                        isLoadingMore = false,
+                        appendErrorMessage = if (isFirstPage) null else searchErrorMessage(error),
+                    )
+                }
+            }
+    }
 
     fun onQueryChanged(query: String) {
         mutableUiState.update { current ->
             val prepared = prepareQuery(query)
-            current.copy(
+            if (prepared == prepareQuery(current.query)) current.copy(query = query)
+            else current.copy(
                 query = query,
                 canSearch = prepared is SearchQuery.Ready,
-                emptyResultQuery = current.emptyResultQuery.takeIf { prepared == prepareQuery(current.query) },
+                status = if (prepared is SearchQuery.Ready) loadingStatus() else promptStatus(),
+                isLoadingMore = false,
+                appendErrorMessage = null,
             )
         }
-    }
-
-    /** Projects Paging's current presentation state without storing it in the ViewModel. */
-    fun screenState(
-        state: SearchUiState,
-        loadStates: CombinedLoadStates,
-        itemCount: Int,
-        resources: Resources,
-    ): SearchUiState {
-        val refresh = loadStates.refresh
-        return state.copy(
-            status = when {
-                !state.canSearch -> promptStatus(state.minimumQueryLength, resources)
-                itemCount > 0 -> null
-                refresh is LoadState.Loading -> loadingStatus(resources)
-                refresh is LoadState.Error -> SearchStatusState(
-                    title = resources.getString(R.string.search_error_title),
-                    message = searchErrorMessage(refresh.error, resources),
-                    canRetry = true,
-                )
-                state.emptyResultQuery == prepareQuery(state.query) -> SearchStatusState(
-                    title = resources.getString(R.string.search_empty_title),
-                    message = resources.getString(R.string.search_empty_message),
-                )
-                else -> loadingStatus(resources)
-            },
-            isLoadingMore = loadStates.append is LoadState.Loading,
-            appendError = (loadStates.append as? LoadState.Error)?.let { searchErrorMessage(it.error, resources) },
-        )
     }
 
     private fun observeFavorites() {
@@ -218,31 +224,34 @@ internal class SearchViewModel @Inject constructor(
         mutableUiState.update { if (it.message?.id == id) it.copy(message = null) else it }
     }
 
-    private fun promptStatus(minimumQueryLength: Int, resources: Resources) = SearchStatusState(
-        title = resources.getString(R.string.search_prompt_title),
-        message = resources.getQuantityString(
-            R.plurals.search_prompt_message, minimumQueryLength, minimumQueryLength,
-        ),
+    private fun promptStatus() = SearchStatusState(
+        titleRes = R.string.search_prompt_title,
+        message = resourceProvider.getString(R.string.search_prompt_message),
     )
 
-    private fun loadingStatus(resources: Resources) = SearchStatusState(
-        title = resources.getString(R.string.search_loading),
-        loading = true,
+    private fun emptyStatus() = SearchStatusState(
+        titleRes = R.string.search_empty_title,
+        message = resourceProvider.getString(R.string.search_empty_message),
     )
 
-    private fun searchErrorMessage(error: Throwable, resources: Resources): String = when (error) {
-        is CatalogException.InvalidQuery -> resources.getQuantityString(
-            R.plurals.search_prompt_message,
-            mutableUiState.value.minimumQueryLength,
-            mutableUiState.value.minimumQueryLength,
-        )
-        is CatalogException.InvalidPage -> resources.getString(R.string.search_error_invalid_page)
-        is CatalogException.MissingApiKey -> resources.getString(R.string.search_error_configuration)
-        is CatalogException.Backend -> error.message?.takeIf { it.isNotBlank() }
-            ?: resources.getString(R.string.search_error_fallback)
-        is CommonException.Network -> resources.getString(R.string.search_error_network)
-        is CommonException.InvalidData -> resources.getString(R.string.search_error_invalid_data)
-        else -> resources.getString(R.string.search_error_fallback)
+    private fun loadingStatus() = SearchStatusState(
+        titleRes = R.string.search_loading,
+        isLoading = true,
+    )
+
+    private fun searchErrorMessage(error: Throwable): String {
+        if (error is CatalogException.Backend && !error.message.isNullOrBlank()) {
+            return error.message.orEmpty()
+        }
+        val messageRes = when (error) {
+            is CatalogException.InvalidQuery -> R.string.search_prompt_message
+            is CatalogException.InvalidPage -> R.string.search_error_invalid_page
+            is CatalogException.MissingApiKey -> R.string.search_error_configuration
+            is CommonException.Network -> R.string.search_error_network
+            is CommonException.InvalidData -> R.string.search_error_invalid_data
+            else -> R.string.search_error_fallback
+        }
+        return resourceProvider.getString(messageRes)
     }
 
     private fun prepareQuery(rawQuery: String): SearchQuery {

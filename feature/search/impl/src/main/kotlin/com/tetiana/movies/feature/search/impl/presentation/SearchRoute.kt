@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalResources
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -19,7 +18,6 @@ fun SearchRoute(
     val viewModel: SearchViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val results = viewModel.results.collectAsLazyPagingItems()
-    val resources = LocalResources.current
     MessageScaffold(
         message = state.message,
         onAction = viewModel::handleMessageAction,
@@ -27,7 +25,7 @@ fun SearchRoute(
         modifier = modifier,
     ) { padding ->
         SearchScreen(
-            state = viewModel.screenState(state, results.loadState, results.itemCount, resources),
+            state = state,
             onSetFavorite = viewModel::setFavorite,
             results = results,
             onQueryChanged = viewModel::onQueryChanged,

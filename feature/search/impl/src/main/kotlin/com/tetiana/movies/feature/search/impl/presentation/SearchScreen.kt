@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -167,7 +166,7 @@ private fun SearchStatus(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
     ) {
-        if (state.loading) {
+        if (state.isLoading) {
             CircularProgressIndicator()
         } else {
             Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
@@ -178,10 +177,10 @@ private fun SearchStatus(
                 )
             }
         }
-        Text(state.title, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
-        if (state.message != null) {
+        Text(stringResource(state.titleRes), style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+        state.message?.let { message ->
             Text(
-                state.message,
+                message,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -249,14 +248,14 @@ private fun SearchResults(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) { CircularProgressIndicator() }
             }
-            state.appendError != null -> item(key = "error") {
+            state.appendErrorMessage != null -> item(key = "error") {
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        state.appendError,
+                        state.appendErrorMessage,
                         textAlign = TextAlign.Center,
                     )
                     OutlinedButton(onClick = results::retry) { Text(stringResource(R.string.search_retry)) }
@@ -268,30 +267,30 @@ private fun SearchResults(
 
 @Preview(name = "Prompt", showBackground = true)
 @Composable
-private fun SearchPromptPreview() = SearchPreview(SearchUiState(minimumQueryLength = 3, status = previewPromptStatus()))
+private fun SearchPromptPreview() = SearchPreview(SearchUiState(status = previewPromptStatus()))
 
 @Preview(name = "Loading", showBackground = true)
 @Composable
 private fun SearchLoadingPreview() = SearchPreview(
-    state = SearchUiState(minimumQueryLength = 3, query = "Xen", canSearch = true, status = previewLoadingStatus()),
+    state = SearchUiState(query = "Xen", canSearch = true, status = previewLoadingStatus),
 )
 
 @Preview(name = "Error", showBackground = true)
 @Composable
 private fun SearchErrorPreview() = SearchPreview(
-    state = SearchUiState(minimumQueryLength = 3, query = "xyz123", canSearch = true, status = previewErrorStatus()),
+    state = SearchUiState(query = "xyz123", canSearch = true, status = previewErrorStatus),
 )
 
 @Preview(name = "Empty", showBackground = true)
 @Composable
 private fun SearchEmptyPreview() = SearchPreview(
-    state = SearchUiState(minimumQueryLength = 3, query = "Xen", canSearch = true, status = previewEmptyStatus()),
+    state = SearchUiState(query = "Xen", canSearch = true, status = previewEmptyStatus()),
 )
 
 @Preview(name = "Results", showBackground = true, fontScale = 2f)
 @Composable
 private fun SearchResultsPreview() = SearchPreview(
-    state = SearchUiState(minimumQueryLength = 3, query = "Xen", canSearch = true),
+    state = SearchUiState(query = "Xen", canSearch = true),
     movies = previewMovies,
 )
 
@@ -324,23 +323,21 @@ private fun SearchPreview(
 
 @Composable
 private fun previewPromptStatus() = SearchStatusState(
-    title = stringResource(R.string.search_prompt_title),
-    message = pluralStringResource(R.plurals.search_prompt_message, 3, 3),
+    titleRes = R.string.search_prompt_title,
+    message = stringResource(R.string.search_prompt_message),
 )
-@Composable
-private fun previewLoadingStatus() = SearchStatusState(
-    title = stringResource(R.string.search_loading),
-    loading = true,
+private val previewLoadingStatus = SearchStatusState(
+    titleRes = R.string.search_loading,
+    isLoading = true,
 )
-@Composable
-private fun previewErrorStatus() = SearchStatusState(
-    title = stringResource(R.string.search_error_title),
+private val previewErrorStatus = SearchStatusState(
+    titleRes = R.string.search_error_title,
     message = "Movie not found!",
     canRetry = true,
 )
 @Composable
 private fun previewEmptyStatus() = SearchStatusState(
-    title = stringResource(R.string.search_empty_title),
+    titleRes = R.string.search_empty_title,
     message = stringResource(R.string.search_empty_message),
 )
 
